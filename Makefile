@@ -1,43 +1,59 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    MakefilE                                           :+:      :+:    :+:    #
+#    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: nmtimkul <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2017/07/07 09:02:22 by nmtimkul          #+#    #+#              #
-#    Updated: 2017/07/07 09:12:07 by nmtimkul         ###   ########.fr        #
+#    Created: 2018/08/30 13:00:58 by nmtimkul          #+#    #+#              #
+#    Updated: 2019/02/02 11:48:00 by nmtimkul         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = ft_ls
+IDIR = ./include/
+INCS = libft.h	\
+	   ft_ls.h
+INCC = $(addprefix $(IDIR), $(INCS))
 
-FILES = ft_ls.c lists.c utils.c options.c
+LDIR = ./libft
+LIBS = -lft
 
-HEADER = ft_ls.h
+SDIR = ./sources/
+SRCS = create_lst.c \
+	   ft_ls.c \
+	   ft_handlelst.c \
+	   ft_print.c \
+	   ft_printy.c \
+	   ft_slist.c \
+	   ft_srev.c \
+	   main.c \
+	   reset_list.c \
 
-OBJECTS = $(FILES:.c=.o)
+SRCC = $(addprefix $(SDIR),$(SRCS))
 
-FLAG = -Wall -Wextra -Werror
+ODIR = ./objects/
+OBJS = $(SRCS:.c=.o)
+OBCC = $(addprefix $(ODIR),$(OBJS))
 
-LIB = libft/libft.a
+FLAG = -g -Wall -Werror -Wextra
 
-all: fclean lib
-	@gcc -c -g $(FILES)
-	@gcc $(FLAG) -g -o ls $(OBJECTS) $(LIB)
+$(NAME): $(OBCC)
+	make -C ./libft/
+	gcc $(FLAG) $(OBCC) -L$(LDIR) $(LIBS) -o $(NAME)
 
-test:
-	@gcc -c $(FILES)
+$(ODIR)%.o: $(SDIR)%.c
+	@mkdir -p $(ODIR)
+	gcc $^ $(FLAG) -c -o $@ -I$(IDIR)
 
-lib:
-	@make -C libft/ re
+all: $(NAME)
 
 clean:
-	@/bin/rm -f $(OBJECTS)
-	@make -C libft/ clean
+	/bin/rm -f $(OBJS)
 
 fclean: clean
-	@rm -f ls
-	@make -C libft/ fclean
+	@make -C ./libft/ clean
+	/bin/rm -f $(NAME)
 
 re: fclean all
+.PHONY: clean fclean all
